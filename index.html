@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Retrieve JSON</title>
+</head>
+
+<body>
+  <div id="target">
+  </div>
+  <div class="newSong" hidden>
+    <input type="text" placeholder="title" id="title" class="inputField">
+    <input type="text" placeholder="artist" id="artist" class="inputField">
+    <input type="text" placeholder="rating" id="rating" class="inputField">
+    <button type="button" name="addNew" onclick="addSong()">Add Song</button>
+  </div>
+  <button type="button" onclick="getSongs();">Display Songs</button>
+
+
+  <script type="text/javascript">
+    var xhttp;
+    var songs;
+
+    function getSongs() {
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = displaySongs;
+      xhttp.open("GET", "/ajaxLab3/songsJson.php", true);
+      xhttp.send();
+    }
+
+    function displaySongs() {
+      if (xhttp.readyState == 4 && xhttp.status == 200) {
+        var jsonObj = JSON.parse(xhttp.responseText);
+        songs = jsonObj.catalog.song;
+
+        displayTableOfSongs(songs);
+      }
+    }
+
+    function displayTableOfSongs(songs) {
+      var output = "<table><tr> <th> title </th><th> artist </th><th> rating </th> </tr>";
+      songs.forEach((item, i) => {
+        output += "<tr> <td> ";
+        output += item.title;
+        output += "</td><td> ";
+        output += item.artist;
+        output += "</td><td> ";
+        output += item.rating;
+        output += "</td></tr>"
+      });
+      output += "</table>";
+
+      document.querySelector("#target").innerHTML = output;
+      document.querySelector(".newSong").hidden = false;
+      document.querySelectorAll(".inputField").forEach((item, i) => {
+        item.value = "";
+      });
+
+    }
+
+    function addSong(){
+      var title = document.querySelector("#title").value;
+      var artist = document.querySelector("#artist").value;
+      var rating = document.querySelector("#rating").value;
+
+      var newSong = {
+        "title": title,
+        "artist": artist,
+        "rating": rating
+      };
+      songs.push(newSong);
+      displayTableOfSongs(songs);
+    }
+
+  </script>
+</body>
+
+</html>
